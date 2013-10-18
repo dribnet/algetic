@@ -18,6 +18,6 @@
                  [com.twitter/chill-bijection_2.10 "0.3.4"]
                  [org.apache.hadoop/hadoop-core "1.1.2"]]
   :jvm-opts ["-Xmx1g"] 
-  :aot [algetic.core algetic.testhll]
+  :aot [algetic.core algetic.testhll algetic.testmh]
   :uberjar-name "algetic.jar")
 
