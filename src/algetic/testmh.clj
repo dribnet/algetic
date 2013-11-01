@@ -1,4 +1,3 @@
-
 (ns algetic.testmh
   (:require [clojure.string    :refer [join split]]
             [clojure.edn       :as edn]

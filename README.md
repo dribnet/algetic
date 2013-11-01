@@ -4,4 +4,7 @@
 
 ## Usage
 
-Pray
+lein run -m algetic.testhll.run
+lein run -m algetic.testsketchmap.run
+
+help!
