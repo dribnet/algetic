@@ -1,4 +1,4 @@
-(defproject algetic "0.1.0-SNAPSHOT"
+(defproject net.drib/algetic "0.1.0-SNAPSHOT"
 
   :repositories [["conjars" "http://conjars.org/repo"]
                  ["sonatype" "http://oss.sonatype.org/content/repositories/releases"]
