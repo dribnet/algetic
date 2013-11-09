@@ -2,10 +2,8 @@
   (:require [clojure.string    :refer [join split]]
             [clojure.edn       :as edn]
             [cascalog.api      :refer :all]
-            [cascalog.ops      :as ops]
             [clojure.data.codec.base64 :as b64]
-            [algetic.core      :refer [daily-logs]]
-            [cascalog.more-taps :refer [hfs-delimited]])
+            [algetic.core      :refer [daily-logs]])
   (:import  [com.twitter.algebird HyperLogLog HyperLogLogMonoid HLL]))
 
 (def mono (HyperLogLogMonoid. 12))

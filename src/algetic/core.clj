@@ -2,9 +2,7 @@
 (ns algetic.core
   (:require [clojure.string    :refer [join split]]
             [clojure.edn       :as edn]
-            [cascalog.api      :refer :all]
-            [cascalog.ops      :as ops]
-            [cascalog.more-taps :refer [hfs-delimited]])
+            [cascalog.api      :refer :all])
   (:import  [com.twitter.algebird HyperLogLogMonoid HLL]))
 
 (def daily-logs
