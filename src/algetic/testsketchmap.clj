@@ -24,7 +24,7 @@
   (.frequency m k))
 
 (defn heavy-hitters [m]
-  (map #(hash-map (._1 %) (._2 %)) 
+  (map #(vector (._1 %) (._2 %)) 
     (JavaConversions/asJavaIterable (.heavyHitters m))))
 
 (defn plus-with
@@ -36,6 +36,39 @@
 
 ; (defn from-string [s]
 ;   (HyperLogLog/fromBytes (b64/decode (.getBytes s))))
+
+(def monoid100 (get-monoid 100))
+
+(defn sm-create
+  [k v]
+  [(elevate-with monoid100 k v)])
+
+(defn sm-plus
+  [x y]
+  [(plus-with monoid100 x y)])
+
+(defparallelagg sketchmap-agg
+  :init-var #'sm-create
+  :combine-var #'sm-plus)
+
+(def count-logs
+  [["monday" 10]
+   ["tuesday" 20]
+   ["wednesday" 30]
+   ["monday" 20]
+   ["tuesday" 30]
+   ["wednesday" 40]])
+
+(defn tops [sketchmap]
+  [(heavy-hitters sketchmap)])
+
+(defmain runcount [& ignored]
+  (?<- (stdout)
+    [?total ?heavy-hitters]
+    (count-logs ?day ?visitors)
+    (sketchmap-agg ?day ?visitors :> ?logs-sketch-map)
+    (total-value ?logs-sketch-map :> ?total)
+    (tops ?logs-sketch-map :> ?heavy-hitters)))
 
 (defmain run [& ignored]
   (let [data (take 1000 (repeatedly (fn [] [(str "key" (rand-int 10)) 1])))

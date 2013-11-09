@@ -30,9 +30,11 @@
   (int (.estimatedSize hll)))
 
 (defmain runcount [& ignored]
-  (?<- (stdout)
-    [?day ?daily-uniques]
-    (identity (HyperLogLogMonoid. 12) :> ?hll-monoid)
-    (daily-logs ?day !visitor)
-    (hll-unique ?hll-monoid !visitor :> ?visitor-hll)
-    (hll-estimate-cardinality ?visitor-hll :> ?daily-uniques)))
+  (let [monoid (HyperLogLogMonoid. 12)]
+    (?<- (stdout)
+      [?day ?daily-uniques]
+      ; (identity (HyperLogLogMonoid. 12) :> ?hll-monoid)
+      (daily-logs ?day !visitor)
+      (identity monoid :> ?monoid)
+      (hll-unique ?monoid !visitor :> ?visitor-hll)
+      (hll-estimate-cardinality ?visitor-hll :> ?daily-uniques))))
