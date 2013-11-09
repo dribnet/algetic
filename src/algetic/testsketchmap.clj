@@ -24,8 +24,8 @@
   (.frequency m k))
 
 (defn heavy-hitters [m]
-  (map #(vector (._1 %) (._2 %)) 
-    (JavaConversions/asJavaIterable (.heavyHitters m))))
+  (vec (map #(vector (._1 %) (._2 %)) 
+    (JavaConversions/asJavaIterable (.heavyHitters m)))))
 
 (defn plus-with
   ([monoid m] m)
