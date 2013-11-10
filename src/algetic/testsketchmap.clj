@@ -10,8 +10,8 @@
 
 ; (def monoid (CrossOver/MakeSketchMapMonoid 5))
 
-(defn get-monoid [topcount]
-  (CrossOver/MakeSketchMapMonoid topcount))
+(defn get-monoid [width height topcount]
+  (CrossOver/MakeSketchMapMonoid width height topcount))
 
 ; k/v is string/long
 (defn elevate-with [monoid k v]
@@ -37,15 +37,18 @@
 ; (defn from-string [s]
 ;   (HyperLogLog/fromBytes (b64/decode (.getBytes s))))
 
-(def monoid100 (get-monoid 100))
-
 (defn sm-create
-  [k v]
-  [(elevate-with monoid100 k v)])
+  [width depth ct k v]
+  (let [monoid (get-monoid width depth ct)
+        sm (elevate-with monoid k v)]
+    [[monoid sm]]))
 
 (defn sm-plus
   [x y]
-  [(plus-with monoid100 x y)])
+    (let [monoid (first x)
+          sm-x (second x)
+          sm-y (second y)]
+      [[monoid (plus-with monoid sm-x sm-y)]]))
 
 (defparallelagg sketchmap-agg
   :init-var #'sm-create
@@ -66,13 +69,16 @@
   (?<- (stdout)
     [?total ?heavy-hitters]
     (count-logs ?day ?visitors)
-    (sketchmap-agg ?day ?visitors :> ?logs-sketch-map)
-    (total-value ?logs-sketch-map :> ?total)
-    (tops ?logs-sketch-map :> ?heavy-hitters)))
+    ; fun variant (vector 1 1 10 :> ?width ?depth ?ct)
+    (vector 100 5 10 :> ?width ?depth ?ct)
+    (sketchmap-agg ?width ?depth ?ct ?day ?visitors :> ?sketch-map-pair)
+    (second ?sketch-map-pair :> ?sketch-map)
+    (total-value ?sketch-map :> ?total)
+    (tops ?sketch-map :> ?heavy-hitters)))
 
 (defmain run [& ignored]
   (let [data (take 1000 (repeatedly (fn [] [(str "key" (rand-int 10)) 1])))
-        monoid (get-monoid 10)
+        monoid (get-monoid 100 5 10)
         elevate (partial elevate-with monoid)
         plus (partial plus-with monoid)
         elevated (map #(apply elevate %) data)
