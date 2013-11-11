@@ -37,18 +37,28 @@
 ; (defn from-string [s]
 ;   (HyperLogLog/fromBytes (b64/decode (.getBytes s))))
 
+(def monoid (atom nil))
+
+(defn memoed-monoid [potential-args]
+  (when-not @monoid
+    ;TODO: counter here? (println "---> NEW MONOID")
+    (reset! monoid (apply get-monoid potential-args)))
+  @monoid)
+
 (defn sm-create
   [width depth ct k v]
-  (let [monoid (get-monoid width depth ct)
+  (let [args (vector width depth ct)
+        monoid (memoed-monoid args)
         sm (elevate-with monoid k v)]
-    [[monoid sm]]))
+    [[args sm]]))
 
 (defn sm-plus
   [x y]
-    (let [monoid (first x)
+    (let [args (first x)
+          monoid (memoed-monoid args)
           sm-x (second x)
           sm-y (second y)]
-      [[monoid (plus-with monoid sm-x sm-y)]]))
+      [[args (plus-with monoid sm-x sm-y)]]))
 
 (defparallelagg sketchmap-agg
   :init-var #'sm-create
